@@ -1,9 +1,47 @@
 version: "3"
-services: 
+services:
+    scraping:
+        build:
+            context: .
+            dockerfile: scraping/Dockerfile
+        command: python -u scraping/main.py
+        image: soccerstat_scraping
+        restart: always
+        container_name: scraping_container
+        ports:
+            - "8080:8080"
+        volumes:
+            - volume_scraping:/scraping/db
+        networks: 
+            - scraping_mongo_net
+            - scraping_app_net
+
+    mongo:
+        build: 
+            context: .
+            dockerfile: mongo/Dockerfile
+        container_name: mongo_container
+        hostname: soccerstat_mongodb
+        restart: always
+        environment:
+            - MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE
+            - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
+            - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
+        volumes:
+            - volume_scraping:/scraping/db
+            - volume_backend_db:/data/db
+            - volume_backend_config:/data/configdb
+        ports:
+            - 27017:27017
+        networks: 
+            - scraping_mongo_net
+            - mongo_app_net
+        depends_on: 
+            - scraping
     app:
         build:
             context: .
-            dockerfile: Dockerfile
+            dockerfile: app/Dockerfile
         command: python -u app/main.py
         image: soccerstat_app
         restart: always
@@ -13,33 +51,23 @@ services:
         volumes:
             - volume_app:/app
         networks: 
-            - backend_net
+            - scraping_app_net
+            - mongo_app_net
         depends_on: 
-            - backend
-
-    backend:
-        image: mongo:latest
-        container_name: mongo_container
-        hostname: soccerstat_mongodb
-        restart: always
-        environment:
-            - MONGO_INITDB_DATABASE=$MONGO_INITDB_DATABASE
-            - MONGO_INITDB_ROOT_USERNAME=$MONGO_INITDB_ROOT_USERNAME
-            - MONGO_INITDB_ROOT_PASSWORD=$MONGO_INITDB_ROOT_PASSWORD
-        volumes:
-            - volume_backend_db:/data/db
-            - volume_backend_config:/data/configdb
-        ports:
-            - 27017:27017
-        networks: 
-            - backend_net
+            - scraping
+            - mongo
 volumes: 
     volume_app:
         driver: local
+    volume_scraping:
     volume_backend_db:
         driver: local
     volume_backend_config:
         driver: local
 networks: 
-    backend_net:
+    scraping_mongo_net:
+        driver: bridge
+    scraping_app_net:
+        driver: bridge
+    mongo_app_net:
         driver: bridge
