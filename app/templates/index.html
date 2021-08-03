@@ -1,0 +1,106 @@
+<!doctype html>
+
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>SoccerStat</title>
+
+    <script type="text/javascript">
+      var seasons_ = new Array();
+      var matchweeks_ = new Array();
+      var i=0;
+      {% for j in matchweeks %}
+        seasons_[i] = new Array();
+        matchweeks_[i] = new Array();
+        var l_ = 0;
+        {% for season,weeks in matchweeks[j].items() %}
+          seasons_[i].push({{ season | tojson | safe }});
+          matchweeks_[i][l_] = {{ weeks | safe }};
+          l_ = l_+1;
+        {% endfor %}
+        i = i+1;
+      {% endfor %}
+
+      function setSeasons(){
+        comp_id = document.getElementById('championships_id');
+        seasonsList = seasons_[comp_id.selectedIndex];
+        changeSelect('season_id', seasonsList);
+      }
+
+      function setMatchweeks(){
+        comp_id = document.getElementById('championships_id');
+        season_id = document.getElementById('season_id');
+        matchweeksList = matchweeks_[comp_id.selectedIndex][season_id.selectedIndex];
+        changeSelect('matchweek_id', matchweeksList);
+      }
+
+      function changeSelect(fieldID, newList){
+        selectField = document.getElementById(fieldID);
+        selectField.options.length = 0;
+        for (i=0; i<newList.length; i++) {
+          selectField.options[selectField.length] = new Option(newList[i], newList[i], newList[i]);
+        }
+      }
+    </script>
+
+  </head>
+
+  <body onload="setSeasons();">
+    <h1>Databases</h1>
+      <li><a href="{{ url_for('databases') }}">Databases</a></li>
+
+      <h1>Collections Mongo</h1>
+      <li><a href="{{ url_for('collections_mongo') }}">Collections Mongo</a></li>
+
+      <h1>Competitions Mongo</h1>
+      <li><a href="{{ url_for('competitions_mongo') }}">Competitions Mongo</a></li>
+
+      <h1>Seasons Mongo</h1>
+      <li><a href="{{ url_for('seasons_mongo') }}">Seasons Mongo</a></li>
+
+      <h1>Matchweeks Mongo</h1>
+      <li><a href="{{ url_for('matchweeks_mongo') }}">Matchweeks Mongo</a></li>
+
+      <h1>Everything Mongo</h1>
+      <li><a href="{{ url_for('everything_mongo') }}">Everything Mongo</a></li>
+
+      <h1>Competitions</h1>
+      <li><a href="{{ url_for('competitions') }}">Competitions</a></li>
+
+      <h1>Seasons</h1>
+      <li><a href="{{ url_for('seasons') }}">Seasons</a></li>
+
+      <h1>Matchweeks</h1>
+      <li><a href="{{ url_for('matchweeks') }}">Matchweeks</a></li>
+
+      <h1>Everything</h1>
+      <li><a href="{{ url_for('everything') }}">Everything</a></li>
+
+    <br>
+    <form>
+      <tr>
+        <td>
+          <select name="championships" id="championships_id" onchange="setSeasons();" required>
+            {% for i in matchweeks %}
+              {% for k,_ in i.items() %}
+                <option value="{{ k }}">{{ k }}</option>
+              {% endfor %}
+            {% endfor %}
+            <option selected disabled hidden>Choose a championship</option>
+          </select>
+        </td>
+        <td>
+          <select name="season" id="season_id" onchange="setMatchweeks();" required>
+            <option value="">Choose a season</option>
+          </select>
+        </td>
+        <td>
+          <select name="matchweek" id="matchweek_id" required>
+            <option value="">Choose a matchweek</option>
+          </select>
+        </td>
+      </tr>
+    </form>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+<!doctype html>
+
+<html lang="en-us">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      <title>Competitions</title>
+   </head>
+  <body>
+     <h1>Competition</h1>
+      {% for season in seasons %}
+         <!-- <h2>{{ comp }}</h2>
+         {% for s in season %}
+            <ul>
+               <li><a href={{season[s]}}>{{s}}</a></li>
+            </ul>
+         {% endfor %}
+         -->
+         <p>{{season}}</p>
+      {% endfor %}
+   </body>
+</html>
