@@ -1,7 +1,6 @@
 FROM python:3.8-slim
-RUN mkdir /scraping
-WORKDIR /scraping
-ADD requirements.txt /scraping
-RUN pip3 install -r requirements.txt
 ADD . /scraping
+WORKDIR /scraping
+RUN pip3 install -r requirements.txt
+CMD ["python", "-u", "main.py"]
 EXPOSE 8080

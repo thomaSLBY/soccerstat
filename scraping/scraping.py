@@ -100,7 +100,6 @@ class Scraping:
     n_games = int(n_teams/2)
 
     list_games = []
-
     response_g = requests.get(link_s_f)
     if response_g.ok:
       strainer = SoupStrainer('tbody')
@@ -114,6 +113,7 @@ class Scraping:
 
   def set_data(self):
     for competition, link_comp in self.set_competitions().items():
+      print(competition)
       dict_competitions = {'name': competition, 'seasons': []}
       for season, values in self.set_seasons_per_comp(link_comp).items():
         dict_competitions['seasons'].append({'name': season, 'matchweeks': self.set_matchweeks_per_season(values[1], self.get_scores_and_fixtures(values[0]))})
