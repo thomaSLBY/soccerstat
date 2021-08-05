@@ -6,16 +6,10 @@ from mongo.main import soccerstat_db
 
 appli = Flask(__name__)
 
-def tree_printer(root):
-    for root, dirs, files in os.walk(root):
-        for d in dirs:
-            print(os.path.join(root, d))
-        for f in files:
-            print(os.path.join(root, f))
-
 @appli.route('/')
 def home():
-    return render_template('index_2.html')
+    return render_template('index.html',
+    matchweeks=soccerstat_db.get_matchweeks())
 
 @appli.route('/databases/')
 def databases():

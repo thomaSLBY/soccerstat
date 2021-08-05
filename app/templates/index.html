@@ -10,11 +10,11 @@
       var seasons_ = new Array();
       var matchweeks_ = new Array();
       var i=0;
-      {% for j in matchweeks %}
+      {% for comp,season in matchweeks.items() %}
         seasons_[i] = new Array();
         matchweeks_[i] = new Array();
         var l_ = 0;
-        {% for season,weeks in matchweeks[j].items() %}
+        {% for season,weeks in season.items() %}
           seasons_[i].push({{ season | tojson | safe }});
           matchweeks_[i][l_] = {{ weeks | safe }};
           l_ = l_+1;
@@ -65,27 +65,13 @@
       <h1>Everything Mongo</h1>
       <li><a href="{{ url_for('everything_mongo') }}">Everything Mongo</a></li>
 
-      <h1>Competitions</h1>
-      <li><a href="{{ url_for('competitions') }}">Competitions</a></li>
-
-      <h1>Seasons</h1>
-      <li><a href="{{ url_for('seasons') }}">Seasons</a></li>
-
-      <h1>Matchweeks</h1>
-      <li><a href="{{ url_for('matchweeks') }}">Matchweeks</a></li>
-
-      <h1>Everything</h1>
-      <li><a href="{{ url_for('everything') }}">Everything</a></li>
-
     <br>
     <form>
       <tr>
         <td>
           <select name="championships" id="championships_id" onchange="setSeasons();" required>
-            {% for i in matchweeks %}
-              {% for k,_ in i.items() %}
-                <option value="{{ k }}">{{ k }}</option>
-              {% endfor %}
+            {% for comp,_ in matchweeks.items() %}
+              <option value="{{ comp }}">{{ comp }}</option>
             {% endfor %}
             <option selected disabled hidden>Choose a championship</option>
           </select>
