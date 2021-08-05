@@ -11,8 +11,12 @@ services:
             - "80:80"
         volumes: 
             - scraping_volume:/scraping
+        networks:
+            - scraping_mongo_net
     
 
 volumes: 
     scraping_volume:
         driver: local
+networks:
+    scraping_mongo_net:

@@ -1,4 +1,4 @@
-from app import appli
+from main import appli
 
-# do some production specific things to the app
-appli.config['DEBUG'] = False
+if __name__=='__main__':
+    appli.run()
