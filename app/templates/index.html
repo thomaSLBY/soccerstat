@@ -9,30 +9,56 @@
     <script type="text/javascript">
       var seasons_ = new Array();
       var matchweeks_ = new Array();
+      var games_ = new Array();
       var i=0;
-      {% for comp,season in matchweeks.items() %}
+      {% for comp,info in data.items() %}
         seasons_[i] = new Array();
         matchweeks_[i] = new Array();
-        var l_ = 0;
-        {% for season,weeks in season.items() %}
-          seasons_[i].push({{ season | tojson | safe }});
-          matchweeks_[i][l_] = {{ weeks | safe }};
-          l_ = l_+1;
+        games_[i] = new Array();
+        var j = 0;
+        {% for seas in info[0]['seasons'] %}
+          matchweeks_[i][j] = new Array();
+          games_[i][j] = new Array();
+          seasons_[i].push({{ seas['name'] | tojson | safe }});
+          var k = 0;
+          {% for week in seas['matchweeks'] %}
+            matchweeks_[i][j].push({{ week['week'] | tojson | safe }});
+            games_[i][j][k] = new Array();
+            var l = 0;
+            {% for game in week['games'] %}
+              games_[i][j][k][l] = new Array();
+              games_[i][j][k][l][0] = {{ game['home'] | tojson | safe }};
+              games_[i][j][k][l][1] = {{ game['score'] | tojson | safe  }};
+              games_[i][j][k][l][2] = {{ game['away'] | tojson | safe  }};
+              games_[i][j][k][l][3] = {{ game['link'] | tojson | safe  }};
+              l = l+1;
+            {% endfor %}
+            k = k+1;
+          {% endfor %}
+          j = j+1;
         {% endfor %}
         i = i+1;
       {% endfor %}
 
       function setSeasons(){
-        comp_id = document.getElementById('championships_id');
+        comp_id = document.getElementById('championship_id');
         seasonsList = seasons_[comp_id.selectedIndex];
         changeSelect('season_id', seasonsList);
       }
 
       function setMatchweeks(){
-        comp_id = document.getElementById('championships_id');
+        comp_id = document.getElementById('championship_id');
         season_id = document.getElementById('season_id');
         matchweeksList = matchweeks_[comp_id.selectedIndex][season_id.selectedIndex];
         changeSelect('matchweek_id', matchweeksList);
+      }
+
+      function getGames(){
+        comp_id = document.getElementById('championship_id');
+        season_id = document.getElementById('season_id');
+        matchweek_id = document.getElementById('matchweek_id');
+        gamesList = games_[comp_id.selectedIndex][season_id.selectedIndex][matchweek_id.selectedIndex];
+        displayOutput('games_id', gamesList);
       }
 
       function changeSelect(fieldID, newList){
@@ -40,6 +66,21 @@
         selectField.options.length = 0;
         for (i=0; i<newList.length; i++) {
           selectField.options[selectField.length] = new Option(newList[i], newList[i], newList[i]);
+        }
+      }
+
+      function displayOutput(fieldID, newList){
+        table = document.getElementById(fieldID);
+        table.innerHTML = "";
+        for (i=0; i<newList.length; i++) {
+          var row = document.createElement('tr');
+          for (j=0; j<newList[i].length; j++){
+            var item = document.createElement('td');
+            var item_text = document.createTextNode(newList[i][j]);
+            item.appendChild(item_text);
+            row.appendChild(item);
+          }
+          table.appendChild(row);
         }
       }
     </script>
@@ -69,8 +110,8 @@
     <form>
       <tr>
         <td>
-          <select name="championships" id="championships_id" onchange="setSeasons();" required>
-            {% for comp,_ in matchweeks.items() %}
+          <select name="championships" id="championship_id" onchange="setSeasons();" required>
+            {% for comp,_ in data.items() %}
               <option value="{{ comp }}">{{ comp }}</option>
             {% endfor %}
             <option selected disabled hidden>Choose a championship</option>
@@ -82,11 +123,24 @@
           </select>
         </td>
         <td>
-          <select name="matchweek" id="matchweek_id" required>
+          <select name="matchweek" id="matchweek_id" onchange="getGames();" required>
             <option value="">Choose a matchweek</option>
           </select>
         </td>
       </tr>
     </form>
+    <table name="games">
+      <thead>
+        <tr>
+          <th>Home</th>
+          <th>Score</th>
+          <th>Away</th>
+          <th>Link</th>
+        </tr>
+      </thead>
+      <tbody id="games_id">
+
+      </tbody>
+    </table>
   </body>
 </html>

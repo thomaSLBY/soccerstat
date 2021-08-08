@@ -58,13 +58,10 @@ class MongoDB:
         #self.client.soccerstat_db.competitions.insert(competitions_seasons_matchweeks)
         #for i in range(len(competitions_seasons_matchweeks)):
         #    self.client.soccerstat_db.competitions.update(competitions_seasons_matchweeks[i], competitions_seasons_matchweeks[i], upsert=True)         
-        i=2022
         for comp in competitions_seasons_matchweeks:
             collection = comp['name']
             print(collection)
             self.client.st_db[collection].insert_one(comp)
-            print("ok", i)
-            i-=1
     
     def get_collection_names(self):
         return self.client.st_db.list_collection_names()

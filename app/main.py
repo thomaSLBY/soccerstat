@@ -9,7 +9,7 @@ appli = Flask(__name__)
 @appli.route('/')
 def home():
     return render_template('index.html',
-    matchweeks=soccerstat_db.get_matchweeks())
+    data=soccerstat_db.get_data())
 
 @appli.route('/databases/')
 def databases():

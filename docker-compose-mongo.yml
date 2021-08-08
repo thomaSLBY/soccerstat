@@ -29,7 +29,7 @@ services:
         command: python -u app/main.py
         image: soccerstat_app
         restart: always
-        container_name: app_container
+        container_name: soccerstat_container
         environment: 
             APP_DEBUG: "False"
             MONGODB_DATABASE: $MONGODB_DATABASE
