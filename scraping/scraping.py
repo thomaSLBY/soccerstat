@@ -86,8 +86,9 @@ class Scraping:
           link_game = self.url+score_tag['href']
           home = i.find('td', attrs={'data-stat': 'squad_a'}).find('a', href=True).text
           away = i.find('td', attrs={'data-stat': 'squad_b'}).find('a', href=True).text
+          date = i.find('td', attrs={'data-stat': 'date'}).find('a', href=True).text
 
-          games.append({'score': score, 'link': link_game, 'home': home, 'away': away})
+          games.append({'score': score, 'link': link_game, 'home': home, 'away': away, 'date': date})
         if n == n_games:
           break
       except:

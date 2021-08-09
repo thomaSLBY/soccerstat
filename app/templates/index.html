@@ -28,9 +28,10 @@
             {% for game in week['games'] %}
               games_[i][j][k][l] = new Array();
               games_[i][j][k][l][0] = {{ game['home'] | tojson | safe }};
-              games_[i][j][k][l][1] = {{ game['score'] | tojson | safe  }};
-              games_[i][j][k][l][2] = {{ game['away'] | tojson | safe  }};
-              games_[i][j][k][l][3] = {{ game['link'] | tojson | safe  }};
+              games_[i][j][k][l][1] = {{ game['score'] | tojson | safe }};
+              games_[i][j][k][l][2] = {{ game['away'] | tojson | safe }};
+              games_[i][j][k][l][3] = {{ game['date'] | tojson | safe }};
+              games_[i][j][k][l][4] = {{ game['link'] | tojson | safe }};
               l = l+1;
             {% endfor %}
             k = k+1;
@@ -73,13 +74,28 @@
         table = document.getElementById(fieldID);
         table.innerHTML = "";
         for (i=0; i<newList.length; i++) {
+          len_liste = newList[i].length;
           var row = document.createElement('tr');
-          for (j=0; j<newList[i].length; j++){
+          for (j=0; j<(len_liste-1); j++){
             var item = document.createElement('td');
+            var item_a = document.createElement('a');
             var item_text = document.createTextNode(newList[i][j]);
-            item.appendChild(item_text);
+            item_a.appendChild(item_text);
+            item.appendChild(item_a);
             row.appendChild(item);
           }
+          var item = document.createElement('td');
+          var item_a = document.createElement('a');
+          var item_text = document.createTextNode('Report');
+          
+          item_a.setAttribute('href', newList[i][len_liste-1]);
+          item_a.setAttribute('target', '_blank');
+          item_a.setAttribute('rel', 'noopener noreferrer');
+
+          item_a.appendChild(item_text);
+          item.appendChild(item_a);
+          row.appendChild(item);
+          
           table.appendChild(row);
         }
       }
@@ -87,26 +103,7 @@
 
   </head>
 
-  <body onload="setSeasons();">
-    <h1>Databases</h1>
-      <li><a href="{{ url_for('databases') }}">Databases</a></li>
-
-      <h1>Collections Mongo</h1>
-      <li><a href="{{ url_for('collections_mongo') }}">Collections Mongo</a></li>
-
-      <h1>Competitions Mongo</h1>
-      <li><a href="{{ url_for('competitions_mongo') }}">Competitions Mongo</a></li>
-
-      <h1>Seasons Mongo</h1>
-      <li><a href="{{ url_for('seasons_mongo') }}">Seasons Mongo</a></li>
-
-      <h1>Matchweeks Mongo</h1>
-      <li><a href="{{ url_for('matchweeks_mongo') }}">Matchweeks Mongo</a></li>
-
-      <h1>Everything Mongo</h1>
-      <li><a href="{{ url_for('everything_mongo') }}">Everything Mongo</a></li>
-
-    <br>
+  <body>
     <form>
       <tr>
         <td>
@@ -130,11 +127,13 @@
       </tr>
     </form>
     <table name="games">
+      <caption align="bottom">source: <i>fbref.com / Statsbomb</i></caption>
       <thead>
         <tr>
           <th>Home</th>
           <th>Score</th>
           <th>Away</th>
+          <th>Date</th>
           <th>Link</th>
         </tr>
       </thead>
