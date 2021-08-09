@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>SoccerStat</title>
-
     <script type="text/javascript">
       var seasons_ = new Array();
       var matchweeks_ = new Array();
@@ -82,19 +81,22 @@
             var item_text = document.createTextNode(newList[i][j]);
             item_a.appendChild(item_text);
             item.appendChild(item_a);
+            item.style.paddingBottom = "5%";
             row.appendChild(item);
           }
-          var item = document.createElement('td');
-          var item_a = document.createElement('a');
-          var item_text = document.createTextNode('Report');
-          
-          item_a.setAttribute('href', newList[i][len_liste-1]);
-          item_a.setAttribute('target', '_blank');
-          item_a.setAttribute('rel', 'noopener noreferrer');
+          var item_report = document.createElement('td');
+          var item_a_report = document.createElement('a');
+          var item_text_report = document.createTextNode('Report');
 
-          item_a.appendChild(item_text);
-          item.appendChild(item_a);
-          row.appendChild(item);
+          item_a_report.setAttribute('href', newList[i][len_liste-1]);
+          item_a_report.setAttribute('target', '_blank');
+          item_a_report.setAttribute('rel', 'noopener noreferrer');
+
+          item_a_report.appendChild(item_text_report);
+          item_report.appendChild(item_a_report);
+          item_report.style.paddingLeft = "10%";
+          item_report.style.paddingBottom = "5%";
+          row.appendChild(item_report);
           
           table.appendChild(row);
         }
@@ -104,41 +106,43 @@
   </head>
 
   <body>
-    <form>
+    <h1 style="background-color: rgb(207, 170, 144);color: white;">
+      Welcome to the website of SoccerStat!
+    </h1>
+    <form style="text-align: center">
       <tr>
         <td>
           <select name="championships" id="championship_id" onchange="setSeasons();" required>
             {% for comp,_ in data.items() %}
               <option value="{{ comp }}">{{ comp }}</option>
             {% endfor %}
-            <option selected disabled hidden>Choose a championship</option>
+            <option value="0" selected disabled hidden>Choose a championship</option>
           </select>
         </td>
         <td>
           <select name="season" id="season_id" onchange="setMatchweeks();" required>
-            <option value="">Choose a season</option>
+            <option value="0">Choose a season</option>
           </select>
         </td>
         <td>
           <select name="matchweek" id="matchweek_id" onchange="getGames();" required>
-            <option value="">Choose a matchweek</option>
+            <option value="0">Choose a matchweek</option>
           </select>
         </td>
       </tr>
     </form>
-    <table name="games">
+    <table style="margin-left:auto;margin-right:auto;">
       <caption align="bottom">source: <i>fbref.com / Statsbomb</i></caption>
-      <thead>
-        <tr>
+      <thead style="color:lightblue">
+        <tr style="padding-bottom: 10%">
           <th>Home</th>
           <th>Score</th>
           <th>Away</th>
           <th>Date</th>
-          <th>Link</th>
+          <th style="padding-left: 10%;">Link</th>
         </tr>
       </thead>
       <tbody id="games_id">
-
       </tbody>
     </table>
   </body>

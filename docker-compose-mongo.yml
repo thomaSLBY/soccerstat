@@ -19,7 +19,7 @@ services:
         volumes:
             - scraping_volume:/scraping
             - mongo-volume-data:/data/db
-            - mongo-volume-config:/data/config
+            - mongo-volume-config:/data/configdb
             - mongo-volume:/mongo
 
     app:
