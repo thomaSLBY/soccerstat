@@ -4,12 +4,14 @@ import json
 import os
 from mongo.main import soccerstat_db
 
+
 appli = Flask(__name__)
 
 @appli.route('/')
 def home():
     return render_template('index.html',
-    data=soccerstat_db.get_data())
+    data=soccerstat_db.get_data()
+    )
 
 @appli.route('/databases/')
 def databases():

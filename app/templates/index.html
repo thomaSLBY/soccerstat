@@ -5,6 +5,14 @@
     <meta charset="utf-8">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>SoccerStat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+
+        
+    <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
+
+
     <script type="text/javascript">
       var seasons_ = new Array();
       var matchweeks_ = new Array();
@@ -63,9 +71,12 @@
 
       function changeSelect(fieldID, newList){
         selectField = document.getElementById(fieldID);
-        selectField.options.length = 0;
         for (i=0; i<newList.length; i++) {
-          selectField.options[selectField.length] = new Option(newList[i], newList[i], newList[i]);
+          option = document.createElement('option');
+          option_text = document.createTextNode(newList[i]);
+          option.setAttribute('value', newList[i]);
+          option.appendChild(option_text);
+          selectField.appendChild(option);
         }
       }
 
@@ -101,38 +112,59 @@
           table.appendChild(row);
         }
       }
+
+      function resetLists(){
+        document.getElementById("championship_id").selectedIndex = 0;
+        document.getElementById("season_id").selectedIndex = 0;
+        document.getElementById("matchweek_id").selectedIndex = 0;
+      }
+
+      function getSelectedItems(){
+        tr_tag = document.getElementById('id_items');
+        items = new Array(document.getElementById('championship_id').selectField,document.getElementById('season_id').selectField,document.getElementById('matchweek_id').selectField)
+        for (i=0; i<items.length; i++){
+          var item = document.createElement('td');
+          var item_text = document.createTextNode(items[i]);
+          item.appendChild(item_text);
+          tr_tag.appendChild(item);
+        }
+      }
     </script>
 
   </head>
 
   <body>
-    <h1 style="background-color: rgb(207, 170, 144);color: white;">
-      Welcome to the website of SoccerStat!
+    <p id="p_logo">
+      <img id="logo" src="{{ url_for('static', filename='Logo.png') }}" alt="Logo">
+    </p>
+    <h1>
+      <span>Welcome to the website of SoccerStat!</span>
     </h1>
-    <form style="text-align: center">
+    <form>
       <tr>
         <td>
           <select name="championships" id="championship_id" onchange="setSeasons();" required>
             {% for comp,_ in data.items() %}
               <option value="{{ comp }}">{{ comp }}</option>
             {% endfor %}
-            <option value="0" selected disabled hidden>Choose a championship</option>
+            <option value=0 selected disabled hidden>Choose a championship</option>
           </select>
         </td>
         <td>
           <select name="season" id="season_id" onchange="setMatchweeks();" required>
-            <option value="0">Choose a season</option>
+            <option value=0 selected disabled hidden>Choose a season</option>
           </select>
         </td>
         <td>
           <select name="matchweek" id="matchweek_id" onchange="getGames();" required>
-            <option value="0">Choose a matchweek</option>
+            <option value=0 selected disabled hidden>Choose a matchweek</option>
           </select>
         </td>
       </tr>
     </form>
-    <table style="margin-left:auto;margin-right:auto;">
-      <caption align="bottom">source: <i>fbref.com / Statsbomb</i></caption>
+
+    <table id="games">
+      <caption>source: <i>fbref.com / Statsbomb</i></caption>
       <thead style="color:lightblue">
         <tr style="padding-bottom: 10%">
           <th>Home</th>
