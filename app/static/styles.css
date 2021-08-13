@@ -1,0 +1,51 @@
+h1 {
+    width: 100%; 
+    text-align: center; 
+    border-bottom:3px solid #000; 
+    line-height: 0em;
+    margin: 3% auto 4.5%;
+    font-family: 'Lobster', Georgia, Times, serif;
+} 
+ 
+h1 span { 
+     background:#fff; 
+     padding:0 10px;
+}
+
+form {
+    text-align: center;
+}
+
+table {
+    margin-left: auto;
+    margin-right: auto;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    border-collapse: collapse;
+}
+
+#logo{
+    width: 10%;
+    height: 10%;
+    vertical-align: top;
+}
+
+#p_logo{
+    text-align: center;
+}
+
+#a_logo {
+    display: flex;
+    align-items: center;
+}
+
+#a_logo:before,
+#a_logo:after {
+    flex: 1;
+    content: '';
+    height: 1px;
+    background: black;
+}
+
+caption {
+    caption-side: bottom;
+}
