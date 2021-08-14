@@ -23,6 +23,18 @@ table {
     border-collapse: collapse;
 }
 
+thead {
+    color: lightblue;
+}
+
+#thead_tr {
+    padding-bottom: 10%;
+}
+
+#link {
+    padding-left: 10%;
+}
+
 #logo{
     width: 10%;
     height: 10%;

@@ -14,51 +14,22 @@
 
 
     <script type="text/javascript">
-      var seasons_ = new Array();
-      var matchweeks_ = new Array();
-      var games_ = new Array();
-      var i=0;
-      {% for comp,info in data.items() %}
-        seasons_[i] = new Array();
-        matchweeks_[i] = new Array();
-        games_[i] = new Array();
-        var j = 0;
-        {% for seas in info[0]['seasons'] %}
-          matchweeks_[i][j] = new Array();
-          games_[i][j] = new Array();
-          seasons_[i].push({{ seas['name'] | tojson | safe }});
-          var k = 0;
-          {% for week in seas['matchweeks'] %}
-            matchweeks_[i][j].push({{ week['week'] | tojson | safe }});
-            games_[i][j][k] = new Array();
-            var l = 0;
-            {% for game in week['games'] %}
-              games_[i][j][k][l] = new Array();
-              games_[i][j][k][l][0] = {{ game['home'] | tojson | safe }};
-              games_[i][j][k][l][1] = {{ game['score'] | tojson | safe }};
-              games_[i][j][k][l][2] = {{ game['away'] | tojson | safe }};
-              games_[i][j][k][l][3] = {{ game['date'] | tojson | safe }};
-              games_[i][j][k][l][4] = {{ game['link'] | tojson | safe }};
-              l = l+1;
-            {% endfor %}
-            k = k+1;
-          {% endfor %}
-          j = j+1;
-        {% endfor %}
-        i = i+1;
-      {% endfor %}
-
+      seasons_ = {{ seasons | tojson | safe }};
+      matchweeks_ = {{ matchweeks | tojson | safe }};
+      games_ = {{ games | tojson | safe }};
+      
       function setSeasons(){
         comp_id = document.getElementById('championship_id');
+
         seasonsList = seasons_[comp_id.selectedIndex];
-        changeSelect('season_id', seasonsList);
+        changeSelect('season_id', seasonsList, "Choose a season");
       }
 
       function setMatchweeks(){
         comp_id = document.getElementById('championship_id');
         season_id = document.getElementById('season_id');
         matchweeksList = matchweeks_[comp_id.selectedIndex][season_id.selectedIndex];
-        changeSelect('matchweek_id', matchweeksList);
+        changeSelect('matchweek_id', matchweeksList, "Choose a matchweek");
       }
 
       function getGames(){
@@ -69,15 +40,21 @@
         displayOutput('games_id', gamesList);
       }
 
-      function changeSelect(fieldID, newList){
+      function changeSelect(fieldID, newList, default_option){
         selectField = document.getElementById(fieldID);
+        selectField.innerHTML = "";
+        selectField.options.length = 0;
         for (i=0; i<newList.length; i++) {
-          option = document.createElement('option');
-          option_text = document.createTextNode(newList[i]);
-          option.setAttribute('value', newList[i]);
-          option.appendChild(option_text);
-          selectField.appendChild(option);
+          selectField.options[selectField.length] = new Option(newList[i], newList[i], newList[i]);
         }
+        option = document.createElement('option');
+        option_text = document.createTextNode(default_option);
+        option.setAttribute('value', 0);
+        option.setAttribute('selected', 'selected');
+        option.setAttribute('hidden', 'hidden');
+        option.setAttribute('disabled', 'disabled');
+        option.appendChild(option_text);
+        selectField.appendChild(option);
       }
 
       function displayOutput(fieldID, newList){
@@ -113,21 +90,35 @@
         }
       }
 
-      function resetLists(){
-        document.getElementById("championship_id").selectedIndex = 0;
-        document.getElementById("season_id").selectedIndex = 0;
-        document.getElementById("matchweek_id").selectedIndex = 0;
+      function getSelectedItems(){
+        table = document.getElementById("items_id");
+        table.innerHTML = "";
+        tr = document.createElement('tr');
+        comp = document.createElement('td');
+        comps = document.getElementById('championship_id');
+        comp_text = document.createTextNode(comps.options[comps.selectedIndex].text);
+        comp.appendChild(comp_text);
+        tr.appendChild(comp);
+
+        season = document.createElement('td');
+        seasons = document.getElementById('season_id');
+        season_text = document.createTextNode(seasons.options[seasons.selectedIndex].text);
+        season.appendChild(season_text);
+        tr.appendChild(season);
+
+        matchweek = document.createElement('td');
+        matchweeks = document.getElementById('matchweek_id');
+        matchweek_text = document.createTextNode(matchweeks.options[matchweeks.selectedIndex].text);
+        matchweek.appendChild(matchweek_text);
+        tr.appendChild(matchweek);
+
+        table.appendChild(tr);
       }
 
-      function getSelectedItems(){
-        tr_tag = document.getElementById('id_items');
-        items = new Array(document.getElementById('championship_id').selectField,document.getElementById('season_id').selectField,document.getElementById('matchweek_id').selectField)
-        for (i=0; i<items.length; i++){
-          var item = document.createElement('td');
-          var item_text = document.createTextNode(items[i]);
-          item.appendChild(item_text);
-          tr_tag.appendChild(item);
-        }
+      function resetLists(){
+        document.getElementById('championship_id').selectedIndex = document.getElementById('championship_id').length-1;
+        document.getElementById('season_id').selectedIndex = document.getElementById('season_id').length-1;
+        document.getElementById('matchweek_id').selectedIndex = document.getElementById('matchweek_id').length-1;
       }
     </script>
 
@@ -144,7 +135,7 @@
       <tr>
         <td>
           <select name="championships" id="championship_id" onchange="setSeasons();" required>
-            {% for comp,_ in data.items() %}
+            {% for comp in comps %}
               <option value="{{ comp }}">{{ comp }}</option>
             {% endfor %}
             <option value=0 selected disabled hidden>Choose a championship</option>
@@ -156,22 +147,27 @@
           </select>
         </td>
         <td>
-          <select name="matchweek" id="matchweek_id" onchange="getGames();" required>
+          <select name="matchweek" id="matchweek_id" onchange="getGames(); getSelectedItems(); resetLists();" required>
             <option value=0 selected disabled hidden>Choose a matchweek</option>
           </select>
         </td>
       </tr>
     </form>
 
+    <table id="items">
+      <tbody id="items_id">
+      </tbody>
+    </table>
+
     <table id="games">
       <caption>source: <i>fbref.com / Statsbomb</i></caption>
-      <thead style="color:lightblue">
-        <tr style="padding-bottom: 10%">
+      <thead>
+        <tr id="thead_tr">
           <th>Home</th>
           <th>Score</th>
           <th>Away</th>
           <th>Date</th>
-          <th style="padding-left: 10%;">Link</th>
+          <th id="link">Link</th>
         </tr>
       </thead>
       <tbody id="games_id">
