@@ -37,7 +37,7 @@
         season_id = document.getElementById('season_id');
         matchweek_id = document.getElementById('matchweek_id');
         gamesList = games_[comp_id.selectedIndex][season_id.selectedIndex][matchweek_id.selectedIndex];
-        displayOutput('games_id', gamesList);
+        displayOutput('games', gamesList);
       }
 
       function changeSelect(fieldID, newList, default_option){
@@ -60,19 +60,77 @@
       function displayOutput(fieldID, newList){
         table = document.getElementById(fieldID);
         table.innerHTML = "";
+
+        caption = document.createElement('caption');
+        caption_text_prefix = document.createTextNode('source: ');
+        caption.appendChild(caption_text_prefix);
+
+        caption_text_italique = document.createElement('i');
+        caption_text_italique_suffix = document.createTextNode('fbref.com / Statsbomb');
+        caption_text_italique.appendChild(caption_text_italique_suffix);
+        caption.appendChild(caption_text_italique);
+
+        table.appendChild(caption);
+
+
+        thead = document.createElement('thead');
+        tr_thead = document.createElement('tr');
+        tr_thead.setAttribute('class', 'tr_games');
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('class', 'th_games');
+        th_thead_text = document.createTextNode('Home');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('class', 'th_games');
+        th_thead_text = document.createTextNode('Score');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('class', 'th_games');
+        th_thead_text = document.createTextNode('Away');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('class', 'th_games');
+        th_thead_text = document.createTextNode('Date');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('id', 'th_games_link');
+        th_thead_text = document.createTextNode('Link');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        thead.appendChild(tr_thead);
+        table.appendChild(thead);
+
+        tbody = document.createElement('tbody');
         for (i=0; i<newList.length; i++) {
           len_liste = newList[i].length;
           var row = document.createElement('tr');
+          row.setAttribute('class', 'tr_games');
           for (j=0; j<(len_liste-1); j++){
             var item = document.createElement('td');
+            if (j==1){
+              item.setAttribute('class', 'td_games_score');
+            }
+            else {
+              item.setAttribute('class', 'td_games');
+            }
             var item_a = document.createElement('a');
             var item_text = document.createTextNode(newList[i][j]);
             item_a.appendChild(item_text);
             item.appendChild(item_a);
-            item.style.paddingBottom = "5%";
             row.appendChild(item);
           }
           var item_report = document.createElement('td');
+          item_report.setAttribute('class', 'td_games_link');
           var item_a_report = document.createElement('a');
           var item_text_report = document.createTextNode('Report');
 
@@ -82,43 +140,69 @@
 
           item_a_report.appendChild(item_text_report);
           item_report.appendChild(item_a_report);
-          item_report.style.paddingLeft = "10%";
-          item_report.style.paddingBottom = "5%";
           row.appendChild(item_report);
           
-          table.appendChild(row);
+          tbody.appendChild(row);
         }
+        table.appendChild(tbody);
       }
 
       function getSelectedItems(){
-        table = document.getElementById("items_id");
+        table = document.getElementById("items");
         table.innerHTML = "";
+
+        thead = document.createElement('thead');
+        th = document.createElement('th');
+        th.setAttribute('class', 'th_items');
+        th_text = document.createTextNode('Championship');
+        th.appendChild(th_text);
+        thead.appendChild(th);
+
+        th = document.createElement('th');
+        th.setAttribute('class', 'th_items');
+        th_text = document.createTextNode('Season');
+        th.appendChild(th_text);
+        thead.appendChild(th);
+
+        th = document.createElement('th');
+        th.setAttribute('class', 'th_items');
+        th_text = document.createTextNode('Week');
+        th.appendChild(th_text);
+        thead.appendChild(th);
+
+        table.appendChild(thead);
+
+        tbody = document.createElement('tbody');
         tr = document.createElement('tr');
         comp = document.createElement('td');
+        comp.setAttribute('class', 'td_items');
         comps = document.getElementById('championship_id');
         comp_text = document.createTextNode(comps.options[comps.selectedIndex].text);
         comp.appendChild(comp_text);
         tr.appendChild(comp);
 
         season = document.createElement('td');
+        season.setAttribute('class', 'td_items');
         seasons = document.getElementById('season_id');
         season_text = document.createTextNode(seasons.options[seasons.selectedIndex].text);
         season.appendChild(season_text);
         tr.appendChild(season);
 
         matchweek = document.createElement('td');
+        matchweek.setAttribute('class', 'td_items');
         matchweeks = document.getElementById('matchweek_id');
         matchweek_text = document.createTextNode(matchweeks.options[matchweeks.selectedIndex].text);
         matchweek.appendChild(matchweek_text);
         tr.appendChild(matchweek);
 
-        table.appendChild(tr);
+        tbody.appendChild(tr);
+        table.appendChild(tbody);
       }
 
       function resetLists(){
         document.getElementById('championship_id').selectedIndex = document.getElementById('championship_id').length-1;
-        document.getElementById('season_id').selectedIndex = document.getElementById('season_id').length-1;
-        document.getElementById('matchweek_id').selectedIndex = document.getElementById('matchweek_id').length-1;
+        document.getElementById('season_id').innerHTML = "<option value=0 selected disabled hidden>Choose a season</option>";
+        document.getElementById('matchweek_id').innerHTML = "<option value=0 selected disabled hidden>Choose a matchweek</option>";
       }
     </script>
 
@@ -155,23 +239,9 @@
     </form>
 
     <table id="items">
-      <tbody id="items_id">
-      </tbody>
     </table>
 
     <table id="games">
-      <caption>source: <i>fbref.com / Statsbomb</i></caption>
-      <thead>
-        <tr id="thead_tr">
-          <th>Home</th>
-          <th>Score</th>
-          <th>Away</th>
-          <th>Date</th>
-          <th id="link">Link</th>
-        </tr>
-      </thead>
-      <tbody id="games_id">
-      </tbody>
     </table>
   </body>
 </html>
