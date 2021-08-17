@@ -13,13 +13,11 @@ class MongoDB:
     def get_databases(self):
         return self.client.list_database_names()
 
-
     def set_data(self, competitions_seasons_matchweeks):
         for comp in competitions_seasons_matchweeks:
             collection = comp['name']
             print(collection)
             self.client.st_db[collection].insert_one(comp)
-
     
     def get_collection_names(self):
         return self.client.st_db.list_collection_names()
