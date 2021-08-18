@@ -6,6 +6,8 @@ from mongo.main import soccerstat_db
 
 
 appli = Flask(__name__)
+
+# Takes the data from the Mongo Database. Prepares the data for Javascript.
 def prepare_data(data):
     comps = []
     seasons = []

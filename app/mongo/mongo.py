@@ -1,7 +1,9 @@
 from pymongo.mongo_client import MongoClient
 
 class MongoDB:
-    """
+    """ Fills a Mongo Database by using the scraped data.
+
+    @client of type MongoClient: set the configuration to access the data
     """
 
     def __init__(self, host, port, username, password, authSource):
@@ -13,6 +15,7 @@ class MongoDB:
     def get_databases(self):
         return self.client.list_database_names()
 
+    # Fills the Mongo Database. Will be filled with the scraped data.
     def set_data(self, competitions_seasons_matchweeks):
         for comp in competitions_seasons_matchweeks:
             collection = comp['name']

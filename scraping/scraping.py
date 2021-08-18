@@ -2,18 +2,24 @@ import requests
 from bs4 import BeautifulSoup, SoupStrainer
 
 class Scraping:
-  """
+  """ Scrapes the data from fbref.com: competitions, seasons, matchweeks, and games.
+  Provides a function that catches all the data needed.
+
+  @url string: URL of fbref.com
+  @data list: all the data stored in a list of combinations of dictionaries and lists.
   """
 
   def __init__(self, url):
     self.url = url
     self.data = []
 
+  # Get the requests object from the URL
   def get_url_response(self):
     url_competitions = self.url + "/en/comps"
     response = requests.get(url_competitions)
     return response
 
+  # Returns the name and the link of each competition
   def set_competitions(self):
     response = self.get_url_response()
     if response.ok:
@@ -34,6 +40,7 @@ class Scraping:
 
       return dict(zip(name_comp, link_comp))
 
+  # For a given competition, returns a dictionary {name of the season: link}
   def set_seasons_per_comp(self, link_comp):
     response_comp = requests.get(link_comp)
     if response_comp.ok:
@@ -60,6 +67,7 @@ class Scraping:
 
       return dict(zip(name_season, values))
 
+  # Returns the link of the table that contains the link of each season recorded
   def get_scores_and_fixtures(self, link):
     response_s_f = requests.get(link)
     if response_s_f.ok:
@@ -69,6 +77,7 @@ class Scraping:
 
       return self.url+link_s_f
 
+  # Returns all the games of a given matchweek
   def set_games_per_matchweek(self, soup, matchweek, n_games):
     games = []
     n = 0
@@ -96,6 +105,7 @@ class Scraping:
 
     return games
 
+  # Returns a list of dictionaries {week: list of the corresponding games}
   def set_matchweeks_per_season(self, n_teams, link_s_f):
     n_matchweeks = (n_teams*2-2)
     n_games = int(n_teams/2)
@@ -112,6 +122,7 @@ class Scraping:
 
       return list_games
 
+  # Set all the data needed
   def set_data(self):
     for competition, link_comp in self.set_competitions().items():
       print(competition)
@@ -120,42 +131,34 @@ class Scraping:
         dict_competitions['seasons'].append({'name': season, 'matchweeks': self.set_matchweeks_per_season(values[1], self.get_scores_and_fixtures(values[0]))})
       self.data.append(dict_competitions)
 
+  # Returns a list of all the competitions. List.
   def get_competitions(self):
     return [document['name'] for document in self.data]
 
-
+  # Returns all the seasons recorded for a given competition. List of season names.
   def get_seasons_per_comp(self, indice):
     return [season['name'] for season in self.data[indice]['seasons']]
-
+  
+  # Returns all the seasons of all the competitions
   def get_seasons(self):
     return dict(zip(self.get_competitions(), \
       [self.get_seasons_per_comp(i) for i in range(len(self.data))]))
 
-
+  # Returns all the matchweeks of a given season, of a given competition. Dictionary {name of the season: list of matchweeks}.
   def get_matchweek_per_season(self, i_comp, j_season):
     season = self.data[i_comp]['seasons'][j_season]
     return {season['name']: [i['week'] for i in season['matchweeks']]}
 
+  # Returns all the matchweeks of all the seasons, of a given competition. Dictionary {comp: [{name_season: [matchweeks]}]}.
   def get_matchweek_per_comp(self, i_comp):
     comp = self.data[i_comp]
     seasons = [self.get_matchweek_per_season(i_comp, j_season) for j_season in range(len(comp['seasons']))]
     return {comp['name']: seasons}
-
+  
+  # Returns all the matchweeks of all the seasons of all the competitions.
   def get_matchweeks(self):
     return [self.get_matchweek_per_comp(i_comp) for i_comp in range(len(self.data))]
 
-
+  # Returns everything we have. Will be used to fill the MongoDB.
   def get_data(self):
     return self.data
-
-
-#scraping_db = Scraping("https://fbref.com")
-#scraping_db.set_data()
-
-#print(scraping_db.get_competitions())
-#print('-'*50)
-#print(scraping_db.get_seasons())
-#print('-'*50)
-#print(scraping_db.get_matchweeks())
-#print('-'*50)
-#print(scraping_db.get_data())
