@@ -1,0 +1,247 @@
+<!doctype html>
+
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>SoccerStat</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+
+        
+    <link href='http://fonts.googleapis.com/css?family=Lobster' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
+
+
+    <script type="text/javascript">
+      seasons_ = {{ seasons | tojson | safe }};
+      matchweeks_ = {{ matchweeks | tojson | safe }};
+      games_ = {{ games | tojson | safe }};
+      
+      function setSeasons(){
+        comp_id = document.getElementById('championship_id');
+
+        seasonsList = seasons_[comp_id.selectedIndex];
+        changeSelect('season_id', seasonsList, "Choose a season");
+      }
+
+      function setMatchweeks(){
+        comp_id = document.getElementById('championship_id');
+        season_id = document.getElementById('season_id');
+        matchweeksList = matchweeks_[comp_id.selectedIndex][season_id.selectedIndex];
+        changeSelect('matchweek_id', matchweeksList, "Choose a matchweek");
+      }
+
+      function getGames(){
+        comp_id = document.getElementById('championship_id');
+        season_id = document.getElementById('season_id');
+        matchweek_id = document.getElementById('matchweek_id');
+        gamesList = games_[comp_id.selectedIndex][season_id.selectedIndex][matchweek_id.selectedIndex];
+        displayOutput('games', gamesList);
+      }
+
+      function changeSelect(fieldID, newList, default_option){
+        selectField = document.getElementById(fieldID);
+        selectField.innerHTML = "";
+        selectField.options.length = 0;
+        for (i=0; i<newList.length; i++) {
+          selectField.options[selectField.length] = new Option(newList[i], newList[i], newList[i]);
+        }
+        option = document.createElement('option');
+        option_text = document.createTextNode(default_option);
+        option.setAttribute('value', 0);
+        option.setAttribute('selected', 'selected');
+        option.setAttribute('hidden', 'hidden');
+        option.setAttribute('disabled', 'disabled');
+        option.appendChild(option_text);
+        selectField.appendChild(option);
+      }
+
+      function displayOutput(fieldID, newList){
+        table = document.getElementById(fieldID);
+        table.innerHTML = "";
+
+        caption = document.createElement('caption');
+        caption_text_prefix = document.createTextNode('source: ');
+        caption.appendChild(caption_text_prefix);
+
+        caption_text_italique = document.createElement('i');
+        caption_text_italique_suffix = document.createTextNode('fbref.com / Statsbomb');
+        caption_text_italique.appendChild(caption_text_italique_suffix);
+        caption.appendChild(caption_text_italique);
+
+        table.appendChild(caption);
+
+
+        thead = document.createElement('thead');
+        tr_thead = document.createElement('tr');
+        tr_thead.setAttribute('class', 'tr_games');
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('class', 'th_games');
+        th_thead_text = document.createTextNode('Home');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('class', 'th_games');
+        th_thead_text = document.createTextNode('Score');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('class', 'th_games');
+        th_thead_text = document.createTextNode('Away');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('class', 'th_games');
+        th_thead_text = document.createTextNode('Date');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        th_thead = document.createElement('th');
+        th_thead.setAttribute('id', 'th_games_link');
+        th_thead_text = document.createTextNode('Link');
+        th_thead.appendChild(th_thead_text);
+        tr_thead.appendChild(th_thead);
+
+        thead.appendChild(tr_thead);
+        table.appendChild(thead);
+
+        tbody = document.createElement('tbody');
+        for (i=0; i<newList.length; i++) {
+          len_liste = newList[i].length;
+          var row = document.createElement('tr');
+          row.setAttribute('class', 'tr_games');
+          for (j=0; j<(len_liste-1); j++){
+            var item = document.createElement('td');
+            if (j==1){
+              item.setAttribute('class', 'td_games_score');
+            }
+            else {
+              item.setAttribute('class', 'td_games');
+            }
+            var item_a = document.createElement('a');
+            var item_text = document.createTextNode(newList[i][j]);
+            item_a.appendChild(item_text);
+            item.appendChild(item_a);
+            row.appendChild(item);
+          }
+          var item_report = document.createElement('td');
+          item_report.setAttribute('class', 'td_games_link');
+          var item_a_report = document.createElement('a');
+          var item_text_report = document.createTextNode('Report');
+
+          item_a_report.setAttribute('href', newList[i][len_liste-1]);
+          item_a_report.setAttribute('target', '_blank');
+          item_a_report.setAttribute('rel', 'noopener noreferrer');
+
+          item_a_report.appendChild(item_text_report);
+          item_report.appendChild(item_a_report);
+          row.appendChild(item_report);
+          
+          tbody.appendChild(row);
+        }
+        table.appendChild(tbody);
+      }
+
+      function getSelectedItems(){
+        table = document.getElementById("items");
+        table.innerHTML = "";
+
+        thead = document.createElement('thead');
+        th = document.createElement('th');
+        th.setAttribute('class', 'th_items');
+        th_text = document.createTextNode('Championship');
+        th.appendChild(th_text);
+        thead.appendChild(th);
+
+        th = document.createElement('th');
+        th.setAttribute('class', 'th_items');
+        th_text = document.createTextNode('Season');
+        th.appendChild(th_text);
+        thead.appendChild(th);
+
+        th = document.createElement('th');
+        th.setAttribute('class', 'th_items');
+        th_text = document.createTextNode('Week');
+        th.appendChild(th_text);
+        thead.appendChild(th);
+
+        table.appendChild(thead);
+
+        tbody = document.createElement('tbody');
+        tr = document.createElement('tr');
+        comp = document.createElement('td');
+        comp.setAttribute('class', 'td_items');
+        comps = document.getElementById('championship_id');
+        comp_text = document.createTextNode(comps.options[comps.selectedIndex].text);
+        comp.appendChild(comp_text);
+        tr.appendChild(comp);
+
+        season = document.createElement('td');
+        season.setAttribute('class', 'td_items');
+        seasons = document.getElementById('season_id');
+        season_text = document.createTextNode(seasons.options[seasons.selectedIndex].text);
+        season.appendChild(season_text);
+        tr.appendChild(season);
+
+        matchweek = document.createElement('td');
+        matchweek.setAttribute('class', 'td_items');
+        matchweeks = document.getElementById('matchweek_id');
+        matchweek_text = document.createTextNode(matchweeks.options[matchweeks.selectedIndex].text);
+        matchweek.appendChild(matchweek_text);
+        tr.appendChild(matchweek);
+
+        tbody.appendChild(tr);
+        table.appendChild(tbody);
+      }
+
+      function resetLists(){
+        document.getElementById('championship_id').selectedIndex = document.getElementById('championship_id').length-1;
+        document.getElementById('season_id').innerHTML = "<option value=0 selected disabled hidden>Choose a season</option>";
+        document.getElementById('matchweek_id').innerHTML = "<option value=0 selected disabled hidden>Choose a matchweek</option>";
+      }
+    </script>
+
+  </head>
+
+  <body>
+    <p id="p_logo">
+      <img id="logo" src="{{ url_for('static', filename='Logo.png') }}" alt="Logo">
+    </p>
+    <h1>
+      <span>Welcome to the website of SoccerStat!</span>
+    </h1>
+    <form>
+      <tr>
+        <td>
+          <select name="championships" id="championship_id" onchange="setSeasons();" required>
+            {% for comp in comps %}
+              <option value="{{ comp }}">{{ comp }}</option>
+            {% endfor %}
+            <option value=0 selected disabled hidden>Choose a championship</option>
+          </select>
+        </td>
+        <td>
+          <select name="season" id="season_id" onchange="setMatchweeks();" required>
+            <option value=0 selected disabled hidden>Choose a season</option>
+          </select>
+        </td>
+        <td>
+          <select name="matchweek" id="matchweek_id" onchange="getGames(); getSelectedItems(); resetLists();" required>
+            <option value=0 selected disabled hidden>Choose a matchweek</option>
+          </select>
+        </td>
+      </tr>
+    </form>
+
+    <table id="items">
+    </table>
+
+    <table id="games">
+    </table>
+  </body>
+</html>

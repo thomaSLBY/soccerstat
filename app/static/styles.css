@@ -1,0 +1,73 @@
+#logo{
+    width: 10%;
+    height: 10%;
+    vertical-align: top;
+}
+
+#p_logo{
+    text-align: center;
+}
+
+h1 {
+    width: 100%; 
+    text-align: center; 
+    border-bottom:3px solid #000; 
+    line-height: 0em;
+    margin: 3% auto 3%;
+    font-family: 'Lobster', Georgia, Times, serif;
+} 
+ 
+h1 span { 
+     background:#fff; 
+     padding:0 10px;
+}
+
+form, .td_games_score {
+    text-align: center;
+}
+
+table {
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    margin-right: auto;
+    margin-left: auto;
+    border-spacing: 20px 1rem;
+}
+
+.th_items, .td_items {
+    text-align: center;
+}
+
+.th_items {
+    color:  #f39c12;
+}
+
+
+.th_games, #th_games_link {
+    color:  #3498db;
+}
+
+.th_games, .th_items {
+    font-size: large;
+}
+
+#th_games_link, .td_games_link {
+    padding-left: 10%;
+}
+
+caption {
+    caption-side: bottom;
+}
+
+
+/* #a_logo {
+    display: flex;
+    align-items: center;
+}
+
+#a_logo:before,
+#a_logo:after {
+    flex: 1;
+    content: '';
+    height: 1px;
+    background: black;
+} */

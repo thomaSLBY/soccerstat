@@ -1,0 +1,22 @@
+version: "3"
+services:
+    scraping:
+        build:
+            context: .\scraping
+            dockerfile: Dockerfile
+        image: soccerstat_scraping
+        restart: always
+        container_name: scraping_container
+        ports:
+            - "80:80"
+        volumes: 
+            - scraping_volume:/scraping
+        networks:
+            - scraping_mongo_net
+    
+
+volumes: 
+    scraping_volume:
+        driver: local
+networks:
+    scraping_mongo_net:

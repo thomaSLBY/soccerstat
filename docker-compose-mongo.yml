@@ -1,0 +1,64 @@
+version: "3"
+services:
+    mongo:
+        build: 
+            context: .\app\mongo
+            dockerfile: Dockerfile
+        container_name: mongo_container
+        hostname: soccerstat_mongodb
+        command: mongod --auth
+        environment:
+            MONGO_INITDB_DATABASE: $MONGO_INITDB_DATABASE
+            MONGO_INITDB_ROOT_USERNAME: $MONGO_INITDB_ROOT_USERNAME
+            MONGO_INITDB_ROOT_PASSWORD: $MONGO_INITDB_ROOT_PASSWORD
+        ports:
+            - 27017:27017
+        networks: 
+            - scraping_mongo_net
+            - mongo_app_net
+        volumes:
+            - scraping_volume:/scraping
+            - mongo-volume-data:/data/db
+            - mongo-volume-config:/data/configdb
+            - mongo-volume:/mongo
+
+    app:
+        build:
+            context: .\app
+            dockerfile: Dockerfile
+        command: python -u app/main.py
+        image: soccerstat_app
+        restart: always
+        container_name: soccerstat_container
+        environment: 
+            APP_DEBUG: "False"
+            MONGODB_DATABASE: $MONGODB_DATABASE
+            MONGODB_USERNAME: $MONGODB_USERNAME
+            MONGODB_PASSWORD: $MONGODB_PASSWORD
+            MONGODB_HOSTNAME: $MONGODB_HOSTNAME
+        ports:
+            - "5000:5000"
+        volumes:
+            - scraping_volume:/scraping
+            - app-volume:/app
+            - mongo-volume-data:/data/db
+            - mongo-volume:/mongo
+        networks: 
+            - mongo_app_net
+        depends_on: 
+            - mongo
+
+volumes: 
+    scraping_volume:
+        driver: local
+    mongo-volume-data:
+        driver: local
+    mongo-volume-config:
+        driver: local
+    app-volume:
+        driver: local
+    mongo-volume:
+        driver: local
+networks:
+    scraping_mongo_net:
+    mongo_app_net:
